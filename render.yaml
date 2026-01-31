@@ -2,7 +2,11 @@ services:
   - type: web
     name: vehicle-service-management
     env: python
-    buildCommand: pip install -r requirements.txt
+    # Upgrade packaging tools first so pip can fetch wheels instead of building from
+    # source (helps avoid Pillow build failures on newer Python runtimes).
+    buildCommand: pip install --upgrade pip setuptools wheel && pip install -r requirements.txt
+    # Prefer Python 3.11 to ensure wheels are available for dependencies like Pillow
+    pythonVersion: 3.11
     startCommand: gunicorn run:app
     envVars:
       - key: SECRET_KEY
