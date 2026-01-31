@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Service Requests - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold"><i class="bi bi-wrench"></i> Service Requests</h2>
+        <p class="text-muted">View and manage all your service requests</p>
+    </div>
+    <a href="{{ url_for('service.request_service') }}" class="btn btn-success btn-lg">
+        <i class="bi bi-plus-circle"></i> New Request
+    </a>
+</div>
+
+{% if requests %}
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-hash"></i> Request ID</th>
+                        <th><i class="bi bi-truck-front"></i> Vehicle</th>
+                        <th><i class="bi bi-tools"></i> Service Type</th>
+                        <th><i class="bi bi-calendar"></i> Preferred Date</th>
+                        <th><i class="bi bi-tag"></i> Status</th>
+                        <th><i class="bi bi-gear"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr>
+                        <td><strong>#{{ req.id }}</strong></td>
+                        <td>{{ req.vehicle.registration_number }}</td>
+                        <td>{{ req.service_type }}</td>
+                        <td>{{ req.preferred_date.strftime('%d-%m-%Y') }}</td>
+                        <td>
+                            {% set status_colors = {'pending': 'warning', 'approved': 'info', 'in_progress': 'primary', 'completed': 'success', 'cancelled': 'secondary', 'rejected': 'danger'} %}
+                            <span class="badge bg-{{ status_colors.get(req.status, 'secondary') }}">
+                                {{ req.status|replace('_', ' ')|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('service.view_request', request_id=req.id) }}" class="btn btn-sm btn-primary" title="View Details">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            {% if req.service_record and req.service_record.invoice %}
+                            <a href="{{ url_for('service.view_invoice', invoice_id=req.service_record.invoice.id) }}" class="btn btn-sm btn-info" title="View Invoice">
+                                <i class="bi bi-file-earmark-pdf"></i> Invoice
+                            </a>
+                            {% if req.service_record.invoice.payment_status != 'paid' and not current_user.is_admin() %}
+                            <a href="{{ url_for('service.pay_invoice', invoice_id=req.service_record.invoice.id) }}" class="btn btn-sm btn-success" title="Pay Invoice">
+                                <i class="bi bi-credit-card"></i> Pay
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 bg-light">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+        <h5 class="mt-3 fw-bold">No service requests yet</h5>
+        <p class="text-muted mb-3">Create your first service request to get started</p>
+        <a href="{{ url_for('service.request_service') }}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Create Service Request
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

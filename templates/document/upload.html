@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Document - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-file-earmark-plus"></i> Upload Document</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <strong>Vehicle:</strong> {{ vehicle.registration_number }} - {{ vehicle.brand }} {{ vehicle.model }}
+                </div>
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.document_type.label(class="form-label") }}
+                        {{ form.document_type(class="form-select" + (" is-invalid" if form.document_type.errors else "")) }}
+                        {% if form.document_type.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.document_type.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.file.label(class="form-label") }}
+                        {{ form.file(class="form-control" + (" is-invalid" if form.file.errors else "")) }}
+                        {% if form.file.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.file.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Upload PDF or image file (max 16MB)</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.expiry_date.label(class="form-label") }}
+                        {{ form.expiry_date(class="form-control" + (" is-invalid" if form.expiry_date.errors else ""), type="date") }}
+                        {% if form.expiry_date.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.expiry_date.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3) }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.description.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('vehicle.view', vehicle_id=vehicle.id) }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-info") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

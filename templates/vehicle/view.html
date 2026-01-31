@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}{{ vehicle.registration_number }} - Vehicle Details{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        {% if vehicle.image_path %}
+            <div style="height: 300px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 12px; overflow: hidden; position: relative;">
+                <img src="{{ url_for('main.uploaded_file', filename=vehicle.image_path) }}" 
+                     class="w-100 h-100" 
+                     style="object-fit: cover;" 
+                     alt="Vehicle Image"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="d-none w-100 h-100 align-items-center justify-content-center" style="position: absolute; top: 0; left: 0;">
+                    <i class="bi bi-truck-front-fill text-primary" style="font-size: 5rem;"></i>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+                <i class="bi bi-truck-front-fill text-primary" style="font-size: 5rem;"></i>
+            </div>
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <h2>{{ vehicle.registration_number }}</h2>
+        <table class="table">
+            <tr>
+                <th>Brand:</th>
+                <td>{{ vehicle.brand }}</td>
+            </tr>
+            <tr>
+                <th>Model:</th>
+                <td>{{ vehicle.model }}</td>
+            </tr>
+            <tr>
+                <th>Fuel Type:</th>
+                <td>{{ vehicle.fuel_type }}</td>
+            </tr>
+            <tr>
+                <th>Manufacturing Year:</th>
+                <td>{{ vehicle.manufacturing_year }}</td>
+            </tr>
+            <tr>
+                <th>Current Odometer:</th>
+                <td>{{ vehicle.current_odometer }} km</td>
+            </tr>
+            <tr>
+                <th>Vehicle Health Score:</th>
+                <td>
+                    <div class="progress" style="height: 25px;">
+                        {% set progress_class = 'success' if health_score >= 70 else ('warning' if health_score >= 40 else 'danger') %}
+                        <div class="progress-bar bg-{{ progress_class }}" 
+                             role="progressbar" style="width: {{ health_score }}%">
+                            {{ health_score }}/100
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Total Maintenance Cost:</th>
+                <td><strong>₹{{ "%.2f"|format(total_expenses) }}</strong></td>
+            </tr>
+        </table>
+        <div class="mt-3">
+            <a href="{{ url_for('vehicle.edit', vehicle_id=vehicle.id) }}" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Edit Vehicle
+            </a>
+            <a href="{{ url_for('service.request_service') }}?vehicle_id={{ vehicle.id }}" class="btn btn-success">
+                <i class="bi bi-calendar-plus"></i> Request Service
+            </a>
+            <a href="{{ url_for('document.upload', vehicle_id=vehicle.id) }}" class="btn btn-info">
+                <i class="bi bi-file-earmark-plus"></i> Upload Document
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Service Records -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-wrench-adjustable"></i> Service History</h5>
+    </div>
+    <div class="card-body">
+        {% if service_records %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Service Date</th>
+                            <th>Service Type</th>
+                            <th>Odometer</th>
+                            <th>Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in service_records %}
+                        <tr>
+                            <td>{{ record.service_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ record.service_type }}</td>
+                            <td>{{ record.odometer_reading or 'N/A' }} km</td>
+                            <td>₹{{ "%.2f"|format(record.total_amount) }}</td>
+                            <td>
+                                {% if record.invoice %}
+                                <a href="{{ url_for('service.view_invoice', invoice_id=record.invoice.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-receipt"></i> Invoice
+                                </a>
+                                {% else %}
+                                <span class="text-muted">No invoice</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No service records yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Service Reminders -->
+{% if reminders %}
+<div class="card mb-4">
+    <div class="card-header bg-warning">
+        <h5 class="mb-0"><i class="bi bi-bell"></i> Service Reminders</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Last Service Date</th>
+                        <th>Next Service Date</th>
+                        <th>Next Service Odometer</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reminder in reminders %}
+                    <tr>
+                        <td>{{ reminder.last_service_date.strftime('%Y-%m-%d') if reminder.last_service_date else 'N/A' }}</td>
+                        <td>{{ reminder.next_service_date.strftime('%Y-%m-%d') if reminder.next_service_date else 'N/A' }}</td>
+                        <td>{{ reminder.next_service_odometer or 'N/A' }} km</td>
+                        <td>
+                            {% if reminder.is_due() %}
+                                <span class="badge bg-danger">Due</span>
+                            {% elif reminder.is_due_soon() %}
+                                <span class="badge bg-warning">Upcoming</span>
+                            {% else %}
+                                <span class="badge bg-success">Scheduled</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Documents -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-folder"></i> Documents</h5>
+    </div>
+    <div class="card-body">
+        {% if documents %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Document Type</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in documents %}
+                        <tr>
+                            <td>{{ doc.document_type }}</td>
+                            <td>{{ doc.expiry_date.strftime('%Y-%m-%d') if doc.expiry_date else 'N/A' }}</td>
+                            <td>
+                                {% if doc.is_expired() %}
+                                    <span class="badge bg-danger">Expired</span>
+                                {% elif doc.is_expiring_soon() %}
+                                    <span class="badge bg-warning">Expiring Soon</span>
+                                {% else %}
+                                    <span class="badge bg-success">Valid</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ url_for('document.download', document_id=doc.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-download"></i> Download
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">No documents uploaded yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

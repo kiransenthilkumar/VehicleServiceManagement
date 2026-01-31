@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center min-vh-100 align-items-center" style="margin-top: -2rem;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-5">
+                <div class="text-center mb-5">
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-car-front-fill text-white" style="font-size: 1.75rem;"></i>
+                    </div>
+                    <h2 class="card-title mt-3 fw-bold">Welcome Back</h2>
+                    <p class="text-muted">Sign in to your account</p>
+                </div>
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.username.label(class="form-label fw-600") }}
+                        {{ form.username(class="form-control form-control-lg" + (" is-invalid" if form.username.errors else ""), placeholder="Enter your username") }}
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback d-block">
+                                <i class="bi bi-exclamation-circle"></i> {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        {{ form.password.label(class="form-label fw-600") }}
+                        {{ form.password(class="form-control form-control-lg" + (" is-invalid" if form.password.errors else ""), placeholder="Enter your password") }}
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback d-block">
+                                <i class="bi bi-exclamation-circle"></i> {% for error in form.password.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg fw-bold") }}
+                    </div>
+                </form>
+                <hr class="my-4">
+                <div class="text-center">
+                    <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}" class="fw-bold text-primary">Create one</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .min-vh-100 {
+        min-height: 100vh;
+    }
+</style>
+{% endblock %}
+

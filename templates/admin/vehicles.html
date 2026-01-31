@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}All Vehicles - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-truck"></i> Vehicle Management</h2>
+    <p class="text-muted">View and manage all registered vehicles in the system</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-truck-front"></i> Total Vehicles</h6>
+                        <h2 class="mb-0 fw-bold">{{ vehicles|length }}</h2>
+                    </div>
+                    <i class="bi bi-truck-front-fill" style="opacity: 0.2; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if vehicles %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Vehicles</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-badge"></i> Registration</th>
+                        <th><i class="bi bi-car-front"></i> Brand</th>
+                        <th>Model</th>
+                        <th><i class="bi bi-fuel-pump"></i> Fuel Type</th>
+                        <th><i class="bi bi-calendar"></i> Year</th>
+                        <th><i class="bi bi-person"></i> Owner</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr class="align-middle">
+                        <td><span class="badge bg-warning text-dark fw-bold">{{ vehicle.registration_number }}</span></td>
+                        <td><strong>{{ vehicle.brand }}</strong></td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>
+                            {% if vehicle.fuel_type == 'Petrol' %}
+                                <span class="badge bg-warning">Petrol</span>
+                            {% elif vehicle.fuel_type == 'Diesel' %}
+                                <span class="badge bg-secondary">Diesel</span>
+                            {% elif vehicle.fuel_type == 'Electric' %}
+                                <span class="badge bg-success">Electric</span>
+                            {% else %}
+                                <span class="badge bg-info">{{ vehicle.fuel_type }}</span>
+                            {% endif %}
+                        </td>
+                        <td><small class="text-muted">{{ vehicle.manufacturing_year }}</small></td>
+                        <td>{{ vehicle.owner.full_name }}</td>
+                        <td class="text-center">
+                            <a href="{{ url_for('admin.view_vehicle', vehicle_id=vehicle.id) }}" class="btn btn-sm btn-primary" title="View Details">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info border-0 shadow-sm" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <h6 class="mb-0 fw-bold">No Vehicles Found</h6>
+            <small>No vehicles have been registered yet.</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Pay Invoice - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-credit-card"></i> Online Payment</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+                                <h5 class="card-title">Invoice Details</h5>
+                                <p class="mb-1"><strong>Invoice #:</strong> {{ invoice.invoice_number }}</p>
+                                <p class="mb-1"><strong>Amount:</strong> <span class="h5 text-success">₹{{ "%.2f"|format(invoice.amount) }}</span></p>
+                                <p class="mb-0"><strong>Vehicle:</strong> {{ invoice.service_record.vehicle.registration_number }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-info text-white border-0">
+                            <div class="card-body">
+                                <h5 class="card-title">Service Details</h5>
+                                <p class="mb-1"><strong>Service Type:</strong> {{ invoice.service_record.service_type }}</p>
+                                <p class="mb-1"><strong>Service Date:</strong> {{ invoice.service_record.service_date.strftime('%d %b %Y') }}</p>
+                                <p class="mb-0"><strong>Customer:</strong> {{ invoice.service_record.vehicle.owner.full_name }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <h5 class="mb-3">Select Payment Method</h5>
+                    
+                    <div class="mb-4">
+                        {{ form.payment_method(class="form-select form-select-lg" + (" is-invalid" if form.payment_method.errors else "")) }}
+                        {% if form.payment_method.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.payment_method.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted d-block mt-2">
+                            <i class="bi bi-info-circle"></i> This is a mock payment system for demonstration purposes.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading"><i class="bi bi-shield-check"></i> Secure Payment</h6>
+                        <p class="mb-0 small">Your payment information is secure. This demo system processes payment instantly.</p>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('service.view_invoice', invoice_id=invoice.id) }}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-success btn-lg", value="✓ Process Payment") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

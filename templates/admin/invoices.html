@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Invoices - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-receipt"></i> Invoice Management</h2>
+    <p class="text-muted">Monitor all invoices and payment status</p>
+</div>
+
+<!-- Filter Section -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="paymentFilter" class="form-label fw-bold"><i class="bi bi-funnel"></i> Filter by Payment Status</label>
+                <select name="payment" id="paymentFilter" class="form-select form-select-lg" onchange="this.form.submit()">
+                    <option value="all" {% if payment_filter == 'all' %}selected{% endif %}>All Invoices</option>
+                    <option value="pending" {% if payment_filter == 'pending' %}selected{% endif %}>Pending Payment</option>
+                    <option value="paid" {% if payment_filter == 'paid' %}selected{% endif %}>Paid</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-receipt"></i> Total Invoices</h6>
+                        <h2 class="mb-0 fw-bold">{{ invoices|length }}</h2>
+                    </div>
+                    <i class="bi bi-receipt" style="opacity: 0.2; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-currency-rupee"></i> Total Value</h6>
+                        <h2 class="mb-0 fw-bold">₹{{ "%.0f"|format(invoices|map(attribute='amount')|sum) }}</h2>
+                    </div>
+                    <i class="bi bi-cash-coin" style="opacity: 0.2; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if invoices %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Invoices</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-hash"></i> Invoice</th>
+                        <th><i class="bi bi-badge"></i> Vehicle</th>
+                        <th><i class="bi bi-person"></i> Customer</th>
+                        <th><i class="bi bi-calendar"></i> Date</th>
+                        <th class="text-end"><i class="bi bi-currency-rupee"></i> Amount</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr class="align-middle">
+                        <td><code class="text-primary fw-bold">{{ invoice.invoice_number }}</code></td>
+                        <td><span class="badge bg-warning text-dark">{{ invoice.service_record.vehicle.registration_number }}</span></td>
+                        <td><strong>{{ invoice.service_record.vehicle.owner.full_name }}</strong></td>
+                        <td><small class="text-muted">{{ invoice.service_record.service_date.strftime('%d %b %Y') }}</small></td>
+                        <td class="text-end"><strong>₹{{ "%.2f"|format(invoice.amount) }}</strong></td>
+                        <td>
+                            {% if invoice.payment_status == 'paid' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Paid</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pending</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ url_for('service.view_invoice', invoice_id=invoice.id) }}" class="btn btn-sm btn-primary" title="View Invoice">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            {% if invoice.payment_status != 'paid' %}
+                            <a href="{{ url_for('admin.mark_invoice_paid', invoice_id=invoice.id) }}" class="btn btn-sm btn-success" title="Mark as Cash Paid">
+                                <i class="bi bi-cash-coin"></i> Cash Paid
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info border-0 shadow-sm" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <h6 class="mb-0 fw-bold">No Invoices Found</h6>
+            <small>No invoices match the current filter criteria.</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

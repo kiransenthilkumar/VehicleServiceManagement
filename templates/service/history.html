@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Service History - {{ vehicle.registration_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clock-history"></i> Service History - {{ vehicle.registration_number }}</h2>
+    <a href="{{ url_for('vehicle.view', vehicle_id=vehicle.id) }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Vehicle
+    </a>
+</div>
+
+{% if records %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Service Date</th>
+                        <th>Service Type</th>
+                        <th>Odometer Reading</th>
+                        <th>Parts Replaced</th>
+                        <th>Labor Charge</th>
+                        <th>Additional Cost</th>
+                        <th>Total Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.service_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ record.service_type }}</td>
+                        <td>{{ record.odometer_reading or 'N/A' }} km</td>
+                        <td>{{ record.parts_replaced or 'N/A' }}</td>
+                        <td>₹{{ "%.2f"|format(record.labor_charge) }}</td>
+                        <td>₹{{ "%.2f"|format(record.additional_cost) }}</td>
+                        <td>
+                            <strong>₹{{ "%.2f"|format(record.total_amount) }}</strong>
+                            {% if record.invoice %}
+                            <br><small><span class="badge {{ 'bg-success' if record.invoice.payment_status == 'paid' else 'bg-warning' }}">{{ record.invoice.payment_status|title }}</span></small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.invoice %}
+                            <a href="{{ url_for('service.view_invoice', invoice_id=record.invoice.id) }}" class="btn btn-sm btn-primary" title="View Invoice">
+                                <i class="bi bi-receipt"></i> Invoice
+                            </a>
+                            {% if record.invoice.payment_status != 'paid' and not current_user.is_admin() %}
+                            <a href="{{ url_for('service.pay_invoice', invoice_id=record.invoice.id) }}" class="btn btn-sm btn-success" title="Pay Invoice">
+                                <i class="bi bi-credit-card"></i> Pay
+                            </a>
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="bi bi-info-circle"></i> No service records found for this vehicle.
+</div>
+{% endif %}
+{% endblock %}
+

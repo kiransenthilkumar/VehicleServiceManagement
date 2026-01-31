@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Customers - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-people"></i> Customer Management</h2>
+    <p class="text-muted">Manage all customers and their account details</p>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-people"></i> Total Customers</h6>
+                        <h2 class="mb-0 fw-bold">{{ customers|length }}</h2>
+                    </div>
+                    <i class="bi bi-people-fill" style="opacity: 0.2; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if customers %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Customers</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-person"></i> Name</th>
+                        <th><i class="bi bi-at"></i> Username</th>
+                        <th><i class="bi bi-envelope"></i> Email</th>
+                        <th><i class="bi bi-telephone"></i> Phone</th>
+                        <th><i class="bi bi-calendar-event"></i> Registered</th>
+                        <th class="text-center"><i class="bi bi-truck"></i> Vehicles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr class="align-middle">
+                        <td><strong>{{ customer.full_name }}</strong></td>
+                        <td><code>{{ customer.username }}</code></td>
+                        <td><a href="mailto:{{ customer.email }}" class="text-decoration-none">{{ customer.email }}</a></td>
+                        <td>{{ customer.phone or '<span class="text-muted">N/A</span>'|safe }}</td>
+                        <td><small class="text-muted">{{ customer.created_at.strftime('%d %b %Y') }}</small></td>
+                        <td class="text-center">
+                            <span class="badge bg-info">{{ customer.vehicles.count() }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info border-0 shadow-sm" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <h6 class="mb-0 fw-bold">No Customers Found</h6>
+            <small>No customer accounts are currently registered.</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

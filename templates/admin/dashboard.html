@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-shield-check"></i> Admin Dashboard</h2>
+    <p class="text-muted">System overview and management tools</p>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-truck-front"></i> Total Vehicles</h6>
+                        <h2 class="mb-0 fw-bold">{{ total_vehicles }}</h2>
+                        <small class="opacity-85">Registered vehicles</small>
+                    </div>
+                    <i class="bi bi-truck-front-fill" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #00838f 0%, #0097a7 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-people"></i> Total Customers</h6>
+                        <h2 class="mb-0 fw-bold">{{ total_customers }}</h2>
+                        <small class="opacity-85">Active users</small>
+                    </div>
+                    <i class="bi bi-people-fill" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-hourglass-split"></i> Pending Requests</h6>
+                        <h2 class="mb-0 fw-bold">{{ pending_requests }}</h2>
+                        <small class="opacity-85">Awaiting approval</small>
+                    </div>
+                    <i class="bi bi-hourglass-split" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #388e3c 0%, #43a047 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-currency-rupee"></i> Monthly Revenue</h6>
+                        <h2 class="mb-0 fw-bold">₹{{ "%.0f"|format(monthly_revenue) }}</h2>
+                        <small class="opacity-85">This month</small>
+                    </div>
+                    <i class="bi bi-cash-coin" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Secondary Statistics -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #f57c00 0%, #fb8c00 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-calendar-day"></i> Today's Requests</h6>
+                        <h2 class="mb-0 fw-bold">{{ today_requests }}</h2>
+                        <small class="opacity-85">New requests</small>
+                    </div>
+                    <i class="bi bi-calendar-fill" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #7b1fa2 0%, #8e24aa 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-arrow-repeat"></i> In Progress</h6>
+                        <h2 class="mb-0 fw-bold">{{ in_progress }}</h2>
+                        <small style="color: rgba(255,255,255,0.85);">Currently active</small>
+                    </div>
+                    <i class="bi bi-arrow-repeat" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-exclamation-circle"></i> Pending Payments</h6>
+                        <h2 class="mb-0 fw-bold">₹{{ "%.0f"|format(pending_payments) }}</h2>
+                        <small class="opacity-85">Outstanding</small>
+                    </div>
+                    <i class="bi bi-credit-card" style="opacity: 0.25; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Functions -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white;">
+                <h5 class="mb-0"><i class="bi bi-person-check"></i> Admin Functions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.customers') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-people"></i> Manage Customers
+                    </a>
+                    <a href="{{ url_for('admin.vehicles') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-truck-front"></i> Manage Vehicles
+                    </a>
+                    <a href="{{ url_for('admin.requests') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-list-check"></i> Service Requests
+                    </a>
+                    <a href="{{ url_for('admin.invoices') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-receipt"></i> View Invoices
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-bar-chart"></i> Reports & Analytics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header" style="background: linear-gradient(135deg, #00838f 0%, #0097a7 100%); color: white;">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Key Metrics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-success fw-bold">{{ completion_rate }}%</h3>
+                            <small class="text-muted">Completion Rate</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-info fw-bold">{{ avg_rating }}</h3>
+                            <small class="text-muted">Avg Rating</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-primary fw-bold">{{ total_invoices }}</h3>
+                            <small class="text-muted">Total Invoices</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <h3 class="text-warning fw-bold">{{ total_revenue }}</h3>
+                            <small class="text-muted">Total Revenue</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                    </div>
+                    <i class="bi bi-exclamation-circle-fill" style="opacity: 0.3; font-size: 2.5rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Service Requests -->
+<div class="card mb-4 border-0 shadow-sm">
+    <div class="card-header bg-light border-bottom">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-list-ul"></i> Recent Service Requests</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if recent_requests %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Customer</th>
+                            <th>Vehicle</th>
+                            <th>Service Type</th>
+                            <th>Preferred Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for req in recent_requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td>{{ req.customer.full_name }}</td>
+                            <td>{{ req.vehicle.registration_number }}</td>
+                            <td>{{ req.service_type }}</td>
+                            <td>{{ req.preferred_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if req.status == 'completed' else 'warning' if req.status == 'pending' else 'info' }}">
+                                    {{ req.status|replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('service.view_request', request_id=req.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-center mt-3">
+                <a href="{{ url_for('admin.requests') }}" class="btn btn-outline-primary">View All Requests</a>
+            </div>
+        {% else %}
+            <p class="text-muted text-center">No service requests yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Quick Links -->
+<div class="row g-3">
+    <div class="col-md-3">
+        <a href="{{ url_for('admin.requests') }}" class="card text-decoration-none text-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-list-check text-primary" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">Service Requests</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('admin.vehicles') }}" class="card text-decoration-none text-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-truck text-primary" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">All Vehicles</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('admin.customers') }}" class="card text-decoration-none text-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-people text-primary" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">Customers</h6>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="{{ url_for('admin.invoices') }}" class="card text-decoration-none text-dark">
+            <div class="card-body text-center">
+                <i class="bi bi-receipt text-primary" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">Invoices</h6>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+

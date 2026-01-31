@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Service Requests - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-list-check"></i> Service Requests</h2>
+    <p class="text-muted">Track and manage all customer service requests</p>
+</div>
+
+<!-- Filter Section -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="statusFilter" class="form-label fw-bold"><i class="bi bi-funnel"></i> Filter by Status</label>
+                <select name="status" id="statusFilter" class="form-select form-select-lg" onchange="this.form.submit()">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Status</option>
+                    <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+                    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+                    <option value="in_progress" {% if status_filter == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-hourglass-split"></i> Pending</h6>
+                        <h2 class="mb-0 fw-bold">{{ requests|selectattr('status', 'equalto', 'pending')|list|length }}</h2>
+                    </div>
+                    <i class="bi bi-hourglass-split" style="opacity: 0.2; font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-arrow-repeat"></i> In Progress</h6>
+                        <h2 class="mb-0 fw-bold">{{ requests|selectattr('status', 'equalto', 'in_progress')|list|length }}</h2>
+                    </div>
+                    <i class="bi bi-arrow-repeat" style="opacity: 0.2; font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-check-circle"></i> Completed</h6>
+                        <h2 class="mb-0 fw-bold">{{ requests|selectattr('status', 'equalto', 'completed')|list|length }}</h2>
+                    </div>
+                    <i class="bi bi-check-circle-fill" style="opacity: 0.2; font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); color: white;">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="card-title mb-2"><i class="bi bi-x-circle"></i> Cancelled</h6>
+                        <h2 class="mb-0 fw-bold">{{ requests|selectattr('status', 'equalto', 'cancelled')|list|length }}</h2>
+                    </div>
+                    <i class="bi bi-x-circle-fill" style="opacity: 0.2; font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if requests %}
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-list-ul"></i> All Service Requests</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th><i class="bi bi-hash"></i> ID</th>
+                        <th><i class="bi bi-person"></i> Customer</th>
+                        <th><i class="bi bi-badge"></i> Vehicle</th>
+                        <th><i class="bi bi-tools"></i> Service Type</th>
+                        <th><i class="bi bi-calendar"></i> Preferred Date</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                    <tr class="align-middle">
+                        <td><code class="text-primary fw-bold">#{{ req.id }}</code></td>
+                        <td><strong>{{ req.customer.full_name }}</strong></td>
+                        <td><span class="badge bg-warning text-dark">{{ req.vehicle.registration_number }}</span></td>
+                        <td>{{ req.service_type }}</td>
+                        <td><small class="text-muted">{{ req.preferred_date.strftime('%d %b %Y') }}</small></td>
+                        <td>
+                            {% if req.status == 'pending' %}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split"></i> Pending</span>
+                            {% elif req.status == 'approved' %}
+                                <span class="badge bg-info"><i class="bi bi-check"></i> Approved</span>
+                            {% elif req.status == 'in_progress' %}
+                                <span class="badge bg-primary"><i class="bi bi-arrow-repeat"></i> In Progress</span>
+                            {% elif req.status == 'completed' %}
+                                <span class="badge bg-success"><i class="bi bi-check-circle"></i> Completed</span>
+                            {% elif req.status == 'cancelled' %}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{{ url_for('service.view_request', request_id=req.id) }}" class="btn btn-sm btn-primary" title="View Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{{ url_for('service.update_status', request_id=req.id) }}" class="btn btn-sm btn-warning" title="Update Status">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info border-0 shadow-sm" role="alert">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+        <div>
+            <h6 class="mb-0 fw-bold">No Service Requests Found</h6>
+            <small>No service requests match the current filter criteria.</small>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

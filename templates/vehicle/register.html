@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Register Vehicle - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-plus-circle"></i> Register New Vehicle</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Registration Number & Fuel Type -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.registration_number.label(class="form-label fw-600") }}
+                            {{ form.registration_number(class="form-control" + (" is-invalid" if form.registration_number.errors else ""), placeholder="e.g., TN-01-AB-1234") }}
+                            {% if form.registration_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.registration_number.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.fuel_type.label(class="form-label fw-600") }}
+                            {{ form.fuel_type(class="form-select" + (" is-invalid" if form.fuel_type.errors else "")) }}
+                            {% if form.fuel_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.fuel_type.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Brand & Model -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.brand.label(class="form-label fw-600") }}
+                            {{ form.brand(class="form-control" + (" is-invalid" if form.brand.errors else ""), placeholder="e.g., Toyota") }}
+                            {% if form.brand.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.brand.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.model.label(class="form-label fw-600") }}
+                            {{ form.model(class="form-control" + (" is-invalid" if form.model.errors else ""), placeholder="e.g., Fortuner") }}
+                            {% if form.model.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.model.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Manufacturing Year & Odometer -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.manufacturing_year.label(class="form-label fw-600") }}
+                            {{ form.manufacturing_year(class="form-control" + (" is-invalid" if form.manufacturing_year.errors else "")) }}
+                            {% if form.manufacturing_year.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.manufacturing_year.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.current_odometer.label(class="form-label fw-600") }}
+                            {{ form.current_odometer(class="form-control" + (" is-invalid" if form.current_odometer.errors else "")) }}
+                            {% if form.current_odometer.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.current_odometer.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Image -->
+                    <div class="mb-4">
+                        {{ form.image.label(class="form-label fw-600") }}
+                        {{ form.image(class="form-control" + (" is-invalid" if form.image.errors else ""), accept="image/*") }}
+                        {% if form.image.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.image.errors %}<i class="bi bi-exclamation-circle"></i> {{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                        <small class="form-text text-muted d-block mt-2">Upload vehicle image (optional) - jpg, png, webp, avif, etc.</small>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('vehicle.list_vehicles') }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

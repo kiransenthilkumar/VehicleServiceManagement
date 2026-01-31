@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+        color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(21, 101, 192, 0.2);
+    }
+
+    .dashboard-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-header p {
+        opacity: 0.9;
+        font-size: 1.05rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        padding: 0.7rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: white;
+        text-decoration: none;
+    }
+
+    .action-btn-add {
+        background: linear-gradient(135deg, #00838f 0%, #0097a7 100%);
+    }
+
+    .action-btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 131, 143, 0.3);
+        color: white;
+    }
+
+    .action-btn-book {
+        background: linear-gradient(135deg, #388e3c 0%, #43a047 100%);
+    }
+
+    .action-btn-book:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(56, 142, 60, 0.3);
+        color: white;
+    }
+
+    .stat-card {
+        border-radius: 12px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card-body {
+        padding: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .stat-info h6 {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.9;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .stat-icon {
+        opacity: 0.25;
+        font-size: 2.5rem;
+    }
+
+    .section-card {
+        border-radius: 12px;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .section-header {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        font-weight: 600;
+        color: white;
+    }
+
+    .section-header h5 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .section-body {
+        padding: 2rem;
+    }
+
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #f5f7fa 0%, #f0f4f8 100%);
+        border-bottom: 2px solid #1565c0;
+    }
+
+    .table thead th {
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 1rem;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(21, 101, 192, 0.03) 0%, rgba(0, 131, 143, 0.03) 100%);
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #2c3e50;
+    }
+
+    .list-group-item {
+        border: 1px solid #ecf0f1;
+        border-radius: 8px;
+        padding: 1.2rem;
+        margin-bottom: 0.8rem;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f9fafc 0%, #ffffff 100%);
+    }
+
+    .list-group-item:hover {
+        box-shadow: 0 5px 15px rgba(21, 101, 192, 0.1);
+        border-color: #1565c0;
+    }
+
+    .list-group-item h6 {
+        color: #1565c0;
+        font-weight: 600;
+    }
+
+    .list-group-item p {
+        color: #555;
+        margin-bottom: 0.5rem;
+    }
+
+    .list-group-item small {
+        color: #7f8c8d;
+    }
+
+    .badge-due {
+        background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%);
+    }
+
+    .badge-upcoming {
+        background: linear-gradient(135deg, #f57c00 0%, #fb8c00 100%);
+    }
+
+    .badge-expired {
+        background: linear-gradient(135deg, #c62828 0%, #d32f2f 100%);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #7f8c8d;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #bdc3c7;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="dashboard-header">
+    <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+    <p>Welcome back, <strong>{{ current_user.full_name }}</strong>! Here's your service overview.</p>
+    <div class="action-buttons">
+        <a href="{{ url_for('vehicle.register') }}" class="action-btn action-btn-add">
+            <i class="bi bi-plus-circle"></i> Add Vehicle
+        </a>
+        <a href="{{ url_for('service.request_service') }}" class="action-btn action-btn-book">
+            <i class="bi bi-calendar-plus"></i> Book Service
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white;">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <h6><i class="bi bi-truck-front"></i> Vehicles</h6>
+                    <div class="stat-value">{{ vehicles|length }}</div>
+                </div>
+                <i class="bi bi-truck-front-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #00838f 0%, #0097a7 100%); color: white;">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <h6><i class="bi bi-bell"></i> Reminders</h6>
+                    <div class="stat-value">{{ reminders|length }}</div>
+                </div>
+                <i class="bi bi-bell-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%); color: white;">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <h6><i class="bi bi-clock"></i> Pending</h6>
+                    <div class="stat-value">{{ recent_requests|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+                </div>
+                <i class="bi bi-clock-fill stat-icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #388e3c 0%, #43a047 100%); color: white;">
+            <div class="stat-card-body">
+                <div class="stat-info">
+                    <h6><i class="bi bi-currency-rupee"></i> Total Spent</h6>
+                    <div class="stat-value">₹{{ "%.0f"|format(total_expenses) }}</div>
+                </div>
+                <i class="bi bi-cash-coin stat-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Reminders -->
+{% if reminders %}
+<div class="section-card">
+    <div class="section-header" style="background: linear-gradient(135deg, #f57c00 0%, #fb8c00 100%);">
+        <i class="bi bi-bell"></i>
+        <h5>Service Reminders</h5>
+    </div>
+    <div class="section-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Next Service Date</th>
+                        <th>Next Service Odometer</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in reminders %}
+                    <tr>
+                        <td><strong>{{ item.vehicle.registration_number }}</strong> - {{ item.vehicle.brand }} {{ item.vehicle.model }}</td>
+                        <td>{{ item.reminder.next_service_date.strftime('%d %b %Y') if item.reminder.next_service_date else 'N/A' }}</td>
+                        <td>{{ item.reminder.next_service_odometer or 'N/A' }} km</td>
+                        <td>
+                            {% if item.is_due %}
+                                <span class="badge badge-due">Due Now</span>
+                            {% else %}
+                                <span class="badge badge-upcoming">Upcoming</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('vehicle.view', vehicle_id=item.vehicle.id) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white; border: none;">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Expiring Documents -->
+{% if expiring_docs %}
+<div class="section-card">
+    <div class="section-header" style="background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%);">
+        <i class="bi bi-file-earmark"></i>
+        <h5>Expiring Documents</h5>
+    </div>
+    <div class="section-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Document Type</th>
+                        <th>Expiry Date</th>
+                        <th>Days Remaining</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in expiring_docs %}
+                    <tr>
+                        <td><strong>{{ item.vehicle.registration_number }}</strong></td>
+                        <td>{{ item.document.document_type }}</td>
+                        <td>{{ item.document.expiry_date.strftime('%d %b %Y') if item.document.expiry_date else 'N/A' }}</td>
+                        <td>
+                            {% if item.is_expired %}
+                                <span class="badge badge-expired">Expired</span>
+                            {% elif item.days_until_expiry %}
+                                <span class="badge badge-upcoming">{{ item.days_until_expiry }} days</span>
+                            {% else %}
+                                <span>N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('vehicle.view', vehicle_id=item.vehicle.id) }}" class="btn btn-sm" style="background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%); color: white; border: none;">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Services -->
+<div class="section-card">
+    <div class="section-header" style="background: linear-gradient(135deg, #00838f 0%, #0097a7 100%);">
+        <i class="bi bi-wrench-adjustable"></i>
+        <h5>Recent Services</h5>
+    </div>
+    <div class="section-body">
+        {% if recent_services %}
+            <div class="list-group">
+                {% for service in recent_services %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between mb-2">
+                        <h6><i class="bi bi-wrench"></i> {{ service.vehicle.registration_number }} - {{ service.service_type }}</h6>
+                        <small class="text-muted">{{ service.service_date.strftime('%d %b %Y') }}</small>
+                    </div>
+                    <p class="mb-1">{{ service.description if service.description else 'Service completed' }}</p>
+                    <small style="color: #27ae60; font-weight: 600;">₹{{ "%.2f"|format(service.total_amount) }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon"><i class="bi bi-inbox"></i></div>
+                <p>No service records yet. Book your first service to get started!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+

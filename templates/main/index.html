@@ -1,0 +1,943 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #0b3d91 0%, #1160c6 60%, #ff7a59 100%);
+        --secondary-gradient: linear-gradient(135deg, #06a7c0 0%, #0097a7 100%);
+        --accent-gradient: linear-gradient(135deg, #ff7a59 0%, #ff6b6b 100%);
+        --light-bg: #fbfdff;
+        --card-shadow: 0 10px 30px rgba(11, 61, 145, 0.10);
+        --card-shadow-hover: 0 20px 50px rgba(11, 61, 145, 0.18);
+        --heading-color: #0b3d91;
+    }
+
+    /* ========== HERO SECTION ========== */
+    .hero-section {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 7rem 2rem 5rem;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 5rem;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: -40%;
+        right: -5%;
+        width: 600px;
+        height: 600px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -5%;
+        width: 400px;
+        height: 400px;
+        background: rgba(0, 152, 167, 0.08);
+        border-radius: 50%;
+        animation: float 10s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(30px); }
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-section h1 {
+        font-size: 3.8rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-section .tagline {
+        font-size: 1.35rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.95;
+        font-weight: 500;
+        line-height: 1.6;
+        max-width: 600px;
+    }
+
+    .hero-highlights {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+        max-width: 650px;
+    }
+
+    .hero-highlight {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+    }
+
+    .hero-highlight i {
+        font-size: 1.5rem;
+        margin-top: 0.2rem;
+        flex-shrink: 0;
+    }
+
+    .hero-highlight-text {
+        font-size: 0.95rem;
+        opacity: 0.95;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 2.5rem;
+    }
+
+    .btn-hero-primary {
+        background: white;
+        color: #0f3a7d;
+        padding: 1rem 2.2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        font-size: 1rem;
+    }
+
+    .btn-hero-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255, 255, 255, 0.4);
+        color: #0f3a7d;
+    }
+
+    .btn-hero-secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        padding: 1rem 2.2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+    }
+
+    .btn-hero-secondary:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: white;
+        color: white;
+        transform: translateY(-3px);
+    }
+
+    /* ========== MOCKUP PREVIEW ========== */
+    .hero-mockup {
+        position: relative;
+        z-index: 2;
+        animation: slideInRight 0.8s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .device-frame {
+        background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        border-radius: 20px;
+        padding: 12px;
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .device-header {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .device-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.4);
+    }
+
+    .device-content {
+        background: rgba(255,255,255,0.95);
+        border-radius: 12px;
+        padding: 20px;
+        color: #0f3a7d;
+    }
+
+    .device-content-item {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+    .device-content-item:last-child {
+        border-bottom: none;
+    }
+
+    .device-label {
+        font-size: 0.8rem;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+    }
+
+    .device-value {
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .device-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #1565c0, #0097a7);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    /* ========== STATS SECTION ========== */
+    .stats-bar {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 12px;
+        margin-top: -4rem;
+        margin-bottom: 4rem;
+        box-shadow: var(--card-shadow);
+        position: relative;
+        z-index: 3;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2.2rem;
+        font-weight: 900;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ========== FEATURES SECTION ========== */
+    .features-section {
+        padding: 5rem 0;
+        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: var(--heading-color);
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+
+    .section-header p {
+        font-size: 1.15rem;
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2.5rem 2rem;
+        border: 1px solid #ecf0f1;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        box-shadow: 0 4px 15px rgba(15, 58, 125, 0.08);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-12px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: #00acc1;
+    }
+
+    .feature-icon-box {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2.2rem;
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 172, 193, 0.25);
+    }
+
+    .feature-card:nth-child(1) .feature-icon-box {
+        background: linear-gradient(135deg, #1565c0, #0f3a7d);
+        box-shadow: 0 8px 20px rgba(21, 101, 192, 0.25);
+    }
+
+    .feature-card:nth-child(2) .feature-icon-box {
+        background: linear-gradient(135deg, #00acc1, #0097a7);
+        box-shadow: 0 8px 20px rgba(0, 172, 193, 0.25);
+    }
+
+    .feature-card:nth-child(3) .feature-icon-box {
+        background: linear-gradient(135deg, #0097a7, #00838f);
+        box-shadow: 0 8px 20px rgba(0, 152, 167, 0.25);
+    }
+
+    .feature-card:nth-child(4) .feature-icon-box {
+        background: linear-gradient(135deg, #1976d2, #1565c0);
+        box-shadow: 0 8px 20px rgba(25, 118, 210, 0.25);
+    }
+
+    .feature-card:nth-child(5) .feature-icon-box {
+        background: linear-gradient(135deg, #0288d1, #0277bd);
+        box-shadow: 0 8px 20px rgba(2, 136, 209, 0.25);
+    }
+
+    .feature-card:nth-child(6) .feature-icon-box {
+        background: linear-gradient(135deg, #00838f, #006064);
+        box-shadow: 0 8px 20px rgba(0, 131, 143, 0.25);
+    }
+
+    .feature-card h5 {
+        color: #0f3a7d;
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .feature-card p {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* ========== HOW IT WORKS SECTION ========== */
+    .how-it-works {
+        padding: 5rem 0;
+        background: white;
+    }
+
+    .steps-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .step-card {
+        text-align: center;
+        padding: 2rem 1.5rem;
+        position: relative;
+    }
+
+    .step-number {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 900;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 8px 20px rgba(15, 58, 125, 0.3);
+    }
+
+    .step-card h5 {
+        color: #0f3a7d;
+        font-weight: 800;
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
+    }
+
+    .step-card p {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .step-card::after {
+        content: '→';
+        position: absolute;
+        right: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2rem;
+        color: #ddd;
+        font-weight: bold;
+    }
+
+    .step-card:last-child::after {
+        content: '';
+    }
+
+    /* ========== TESTIMONIALS SECTION ========== */
+    .testimonials-section {
+        padding: 5rem 0;
+        background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+
+    .testimonial-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2.5rem;
+        border: 1px solid #ecf0f1;
+        box-shadow: 0 4px 15px rgba(15, 58, 125, 0.08);
+        transition: all 0.35s ease;
+        height: 100%;
+    }
+
+    .testimonial-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .rating {
+        margin-bottom: 1.5rem;
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+
+    .testimonial-text {
+        color: #333;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        font-style: italic;
+    }
+
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .author-info h6 {
+        color: #0f3a7d;
+        font-weight: 700;
+        margin-bottom: 0.2rem;
+        font-size: 0.95rem;
+    }
+
+    .author-info p {
+        color: #999;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    /* ========== CTA SECTION ========== */
+    .cta-premium {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 5rem 2rem;
+        border-radius: 16px;
+        margin: 5rem 0;
+        box-shadow: 0 20px 60px rgba(15, 58, 125, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-premium::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+    }
+
+    .cta-premium::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 300px;
+        height: 300px;
+        background: rgba(0, 152, 167, 0.1);
+        border-radius: 50%;
+    }
+
+    .cta-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+
+    .cta-premium h2 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+    }
+
+    .cta-premium p {
+        font-size: 1.1rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.95;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-cta {
+        background: white;
+        color: #0f3a7d;
+        padding: 1rem 2.5rem;
+        border-radius: 8px;
+        font-weight: 700;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+        font-size: 1rem;
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(255, 255, 255, 0.4);
+        color: #0f3a7d;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 992px) {
+        .hero-section h1 {
+            font-size: 2.8rem;
+        }
+
+        .hero-section .tagline {
+            font-size: 1.15rem;
+        }
+
+        .device-frame {
+            max-width: 100%;
+            margin-top: 2rem;
+        }
+
+        .stats-bar {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4rem 1.5rem 3rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.2rem;
+        }
+
+        .hero-section .tagline {
+            font-size: 1rem;
+        }
+
+        .hero-highlights {
+            gap: 1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+        }
+
+        .btn-hero-primary,
+        .btn-hero-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+        }
+
+        .step-card::after {
+            display: none;
+        }
+
+        .cta-premium h2 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+
+<!-- ========== HERO SECTION ========== -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 hero-content">
+                <h1>VehicleCare — Smart Maintenance, Zero Hassle</h1>
+                <p class="tagline">End-to-end vehicle maintenance & service management for owners and workshops. Reduce downtime, control costs, and never miss a critical service.</p>
+
+                <div class="hero-highlights">
+                    <div class="hero-highlight">
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span class="hero-highlight-text">Automated reminders & predictive alerts</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <i class="bi bi-gear-fill"></i>
+                        <span class="hero-highlight-text">Seamless booking & workshop workflow</span>
+                    </div>
+                    <div class="hero-highlight">
+                        <i class="bi bi-shield-lock-fill"></i>
+                        <span class="hero-highlight-text">Secure documents & GDPR-compliant storage</span>
+                    </div>
+                </div>
+
+                <div class="hero-buttons">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.register') }}" class="btn-hero-primary">
+                            <i class="bi bi-person-plus"></i> Get Started — It's Free
+                        </a>
+                        <a href="{{ url_for('auth.login') }}" class="btn-hero-secondary">
+                            <i class="bi bi-box-arrow-in-right"></i> Sign In
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('main.dashboard') }}" class="btn-hero-primary">
+                            <i class="bi bi-speedometer2"></i> Open Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-lg-6 hero-mockup d-none d-lg-block">
+                <div class="device-frame">
+                    <div class="device-header">
+                        <div class="device-dot"></div>
+                        <div class="device-dot"></div>
+                        <div class="device-dot"></div>
+                    </div>
+                    <div class="device-content">
+                        <div class="device-content-item">
+                            <div class="device-label">🚗 Active Vehicles</div>
+                            <div class="device-value">3 Vehicles</div>
+                        </div>
+                        <div class="device-content-item">
+                            <div class="device-label">⚙️ Upcoming Service</div>
+                            <div class="device-value">Toyota Camry</div>
+                            <div class="device-badge">Due: Apr 15</div>
+                        </div>
+                        <div class="device-content-item">
+                            <div class="device-label">📄 Documents</div>
+                            <div class="device-value">12 Documents</div>
+                            <div class="device-badge">2 Expiring Soon</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== STATS BAR ========== -->
+<div class="container">
+    <div class="stats-bar">
+        <div class="row">
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">5,000+</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">50,000+</div>
+                <div class="stat-label">Services Tracked</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">₹100Cr+</div>
+                <div class="stat-label">Cost Saved</div>
+            </div>
+            <div class="col-md-3 stat-item">
+                <div class="stat-number">4.8★</div>
+                <div class="stat-label">User Rating</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== FEATURES SECTION ========== -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>Powerful Features for Vehicle Management</h2>
+            <p>Everything you need to maintain your vehicles and stay on top of maintenance schedules</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <h5>Vehicle Management</h5>
+                    <p>Register unlimited vehicles with detailed specs, maintenance history, and service records in one unified dashboard.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-calendar-check-fill"></i>
+                    </div>
+                    <h5>Smart Scheduling</h5>
+                    <p>Book service appointments with real-time tracking and instant notifications for your bookings.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-bell-fill"></i>
+                    </div>
+                    <h5>Maintenance Alerts</h5>
+                    <p>Receive intelligent reminders based on time and mileage to never miss a critical service appointment.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+                    </div>
+                    <h5>Document Storage</h5>
+                    <p>Securely store warranties, insurance, registration documents with automatic expiry alerts and easy access.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box" style="font-size:1.1rem;">
+                        <!-- Inline SVG invoice icon to avoid CDN/font issues -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 6v13a1 1 0 0 1-1.447.894L17 18l-2.553 1.894A1 1 0 0 1 13 18l-2.553 1.894A1 1 0 0 1 9 18l-2.553 1.894A1 1 0 0 1 5 18V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            <line x1="8" y1="9" x2="16" y2="9"></line>
+                            <line x1="8" y1="13" x2="14" y2="13"></line>
+                        </svg>
+                    </div>
+                    <h5>Invoicing & Payments</h5>
+                    <p>Generate professional invoices, accept payments, and track expenses with easy exports and receipts.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card">
+                    <div class="feature-icon-box">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                    <h5>Analytics & Reports</h5>
+                    <p>Get detailed insights into maintenance costs, service history, and vehicle health metrics over time.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>Get started in just 4 simple steps</p>
+        </div>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h5>Create Account</h5>
+                <p>Sign up in seconds with your email and verify your identity to get instant access.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h5>Register Vehicles</h5>
+                <p>Add your vehicles with complete details and existing maintenance history.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h5>Book Services</h5>
+                <p>Schedule maintenance appointments and upload relevant documents.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h5>Track & Manage</h5>
+                <p>Monitor service status and receive smart reminders for upcoming maintenance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== TESTIMONIALS ========== -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header">
+            <h2>What Users Love About VehicleCare</h2>
+            <p>Join thousands of satisfied vehicle owners and service centers</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="testimonial-text">"Absolutely game-changing! I never miss a service deadline anymore. The reminders are perfect and the document storage is so convenient."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">RK</div>
+                        <div class="author-info">
+                            <h6>Rajesh Kumar</h6>
+                            <p>Car Owner, Mumbai</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="testimonial-text">"As a workshop owner, this tool has streamlined our operations. Customers love the real-time tracking and professional invoices. Highly recommended!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">PM</div>
+                        <div class="author-info">
+                            <h6>Priya Mehta</h6>
+                            <p>Workshop Owner, Delhi</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <div class="testimonial-card">
+                    <div class="rating">
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <p class="testimonial-text">"The document management feature is brilliant! All my insurance and warranty documents in one secure place. Worth every penny!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AS</div>
+                        <div class="author-info">
+                            <h6>Arjun Singh</h6>
+                            <p>Fleet Manager, Bangalore</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ========== CTA PREMIUM ========== -->
+{% if not current_user.is_authenticated %}
+<div class="container">
+    <div class="cta-premium">
+        <div class="cta-content">
+            <h2>Ready to Take Control of Your Vehicle Maintenance?</h2>
+            <p>Join thousands of vehicle owners and service centers who trust VehicleCare. Start managing your vehicles smarter today.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('auth.register') }}" class="btn-cta">
+                    <i class="bi bi-rocket-takeoff-fill"></i> Get Started Free
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn-cta" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.8);">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+

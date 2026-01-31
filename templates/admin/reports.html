@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold mb-2"><i class="bi bi-bar-chart"></i> Reports & Analytics</h2>
+    <p class="text-muted">Comprehensive business analytics and insights</p>
+</div>
+
+<!-- Monthly Revenue Chart -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-graph-up"></i> Monthly Maintenance Cost (Current Year)</h5>
+    </div>
+    <div class="card-body">
+        <canvas id="monthlyChart" height="80"></canvas>
+    </div>
+</div>
+
+<!-- Vehicle-wise Expenses -->
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-truck"></i> Top Vehicles by Maintenance Expense</h5>
+            </div>
+            <div class="card-body">
+                {% if vehicle_expenses %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="bi bi-badge"></i> Registration</th>
+                                    <th><i class="bi bi-car-front"></i> Brand</th>
+                                    <th>Model</th>
+                                    <th class="text-center"><i class="bi bi-wrench"></i> Services</th>
+                                    <th class="text-end"><i class="bi bi-currency-rupee"></i> Total Expense</th>
+                                    <th class="text-center"><i class="bi bi-exclamation-triangle"></i> Risk Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set total_expense_sum = (vehicle_expenses|map(attribute=3)|map('float')|list|sum) %}
+                                {% set total_services_sum = (vehicle_expenses|map(attribute=4)|sum) %}
+                                {% set avg_cost_per_service = total_expense_sum / total_services_sum %}
+                                {% for expense in vehicle_expenses %}
+                                {% set cost_per_service = (expense[3]|float) / expense[4] %}
+                                {% if cost_per_service > avg_cost_per_service * 1.3 %}
+                                    {% set risk_level = 'High' %}
+                                    {% set risk_color = 'danger' %}
+                                    {% set risk_icon = 'exclamation-circle-fill' %}
+                                {% elif cost_per_service > avg_cost_per_service * 0.8 %}
+                                    {% set risk_level = 'Medium' %}
+                                    {% set risk_color = 'warning' %}
+                                    {% set risk_icon = 'exclamation-triangle-fill' %}
+                                {% else %}
+                                    {% set risk_level = 'Low' %}
+                                    {% set risk_color = 'success' %}
+                                    {% set risk_icon = 'check-circle-fill' %}
+                                {% endif %}
+                                <tr class="align-middle">
+                                    <td><span class="badge bg-warning text-dark fw-bold">{{ expense[0] }}</span></td>
+                                    <td><strong>{{ expense[1] }}</strong></td>
+                                    <td>{{ expense[2] }}</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ expense[4] }}</span></td>
+                                    <td class="text-end">
+                                        <strong>₹{{ "%.2f"|format(expense[3]) }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-{{ risk_color }}">
+                                            <i class="bi bi-{{ risk_icon }}"></i> {{ risk_level }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info border-0 mb-0" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-info-circle me-3" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <h6 class="mb-0 fw-bold">No Data Available</h6>
+                                <small>No service records found yet.</small>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+const ctx = document.getElementById('monthlyChart').getContext('2d');
+const monthlyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+            label: 'Maintenance Cost (₹)',
+            data: {{ monthly_totals }},
+            backgroundColor: [
+                'rgba(102, 126, 234, 0.7)',
+                'rgba(240, 147, 251, 0.7)',
+                'rgba(79, 172, 254, 0.7)',
+                'rgba(67, 233, 123, 0.7)',
+                'rgba(250, 112, 154, 0.7)',
+                'rgba(255, 154, 86, 0.7)',
+                'rgba(168, 237, 234, 0.7)',
+                'rgba(254, 212, 227, 0.7)',
+                'rgba(102, 126, 234, 0.7)',
+                'rgba(240, 147, 251, 0.7)',
+                'rgba(79, 172, 254, 0.7)',
+                'rgba(67, 233, 123, 0.7)'
+            ],
+            borderColor: [
+                'rgba(102, 126, 234, 1)',
+                'rgba(240, 147, 251, 1)',
+                'rgba(79, 172, 254, 1)',
+                'rgba(67, 233, 123, 1)',
+                'rgba(250, 112, 154, 1)',
+                'rgba(255, 154, 86, 1)',
+                'rgba(168, 237, 234, 1)',
+                'rgba(254, 212, 227, 1)',
+                'rgba(102, 126, 234, 1)',
+                'rgba(240, 147, 251, 1)',
+                'rgba(79, 172, 254, 1)',
+                'rgba(67, 233, 123, 1)'
+            ],
+            borderWidth: 2,
+            borderRadius: 5
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: true,
+                labels: {
+                    font: {
+                        size: 12,
+                        weight: 'bold'
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '₹' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

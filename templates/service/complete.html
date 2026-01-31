@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Complete Service - Vehicle Service Management{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Complete Service - Request #{{ service_request.id }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <strong>Vehicle:</strong> {{ service_request.vehicle.registration_number }} - {{ service_request.vehicle.brand }} {{ service_request.vehicle.model }}<br>
+                    <strong>Service Type:</strong> {{ service_request.service_type }}
+                </div>
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.service_type.label(class="form-label") }}
+                        {{ form.service_type(class="form-control" + (" is-invalid" if form.service_type.errors else "")) }}
+                        {% if form.service_type.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.service_type.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.parts_replaced.label(class="form-label") }}
+                        {{ form.parts_replaced(class="form-control" + (" is-invalid" if form.parts_replaced.errors else ""), rows=3) }}
+                        {% if form.parts_replaced.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.parts_replaced.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form.labor_charge.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.labor_charge(class="form-control" + (" is-invalid" if form.labor_charge.errors else "")) }}
+                            </div>
+                            {% if form.labor_charge.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.labor_charge.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form.additional_cost.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                {{ form.additional_cost(class="form-control" + (" is-invalid" if form.additional_cost.errors else "")) }}
+                            </div>
+                            {% if form.additional_cost.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.additional_cost.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.odometer_reading.label(class="form-label") }}
+                        {{ form.odometer_reading(class="form-control" + (" is-invalid" if form.odometer_reading.errors else "")) }}
+                        {% if form.odometer_reading.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.odometer_reading.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.service_notes.label(class="form-label") }}
+                        {{ form.service_notes(class="form-control" + (" is-invalid" if form.service_notes.errors else ""), rows=3) }}
+                        {% if form.service_notes.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.service_notes.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('service.view_request', request_id=service_request.id) }}" class="btn btn-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
