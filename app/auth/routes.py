@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request
+from flask import render_template, redirect, url_for, flash, request, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.auth import bp
@@ -41,7 +41,15 @@ def register():
         )
         user.set_password(form.password.data)
         db.session.add(user)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            # Log full traceback and rollback to avoid 500
+            current_app.logger.exception('Failed to create new user during registration')
+            db.session.rollback()
+            flash('An internal error occurred while creating your account. Please try again or contact the administrator.', 'error')
+            return render_template('auth/register.html', form=form)
+
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
