@@ -1,5 +1,6 @@
 from flask import render_template, redirect, url_for, flash, request, send_from_directory, current_app
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
 from app import db
 from app.main import bp
 from app.models import Vehicle, ServiceRequest, ServiceRecord, ServiceReminder, Document
@@ -103,7 +104,12 @@ def profile():
 def uploaded_file(filename):
     """Serve uploaded files - accessible to anyone who has the filename"""
     try:
-        return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+        # Try vehicle uploads folder first
+        vehicle_folder = current_app.config.get('VEHICLE_UPLOAD_FOLDER')
+        if vehicle_folder and os.path.exists(os.path.join(vehicle_folder, secure_filename(filename))):
+            return send_from_directory(vehicle_folder, secure_filename(filename))
+        # Fall back to general uploads folder
+        return send_from_directory(current_app.config['UPLOAD_FOLDER'], secure_filename(filename))
     except Exception as e:
         from flask import abort
         current_app.logger.error(f"File not found or error: {e}")

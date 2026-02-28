@@ -15,7 +15,7 @@
                 <div class="mb-4">
                     <label class="form-label fw-bold">Current Vehicle Image</label>
                     <div style="height: 200px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative;">
-                        <img src="{{ url_for('main.uploaded_file', filename=vehicle.image_path) }}" 
+                        <img src="{{ url_for('static', filename='uploads/vehicles/' + vehicle.image_path) }}" 
                              class="w-100 h-100" 
                              style="object-fit: cover;" 
                              alt="Current Vehicle Image"

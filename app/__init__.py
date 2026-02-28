@@ -31,7 +31,7 @@ def create_app(config_class=Config):
         for directory in upload_dirs:
             os.makedirs(directory, exist_ok=True)
     except Exception as e:
-        print(f"Warning: Could not create upload directories: {e}")
+        app.logger.warning(f"Could not create upload directories: {e}")
     
     # Register blueprints
     from app.auth import bp as auth_bp

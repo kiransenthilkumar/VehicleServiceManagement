@@ -20,7 +20,7 @@
         <div class="card shadow-sm h-100">
             <div style="height: 220px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); overflow: hidden; position: relative;">
                 {% if vehicle.image_path %}
-                    <img src="{{ url_for('main.uploaded_file', filename=vehicle.image_path) }}" 
+                    <img src="{{ url_for('static', filename='uploads/vehicles/' + vehicle.image_path) }}" 
                          class="w-100 h-100" 
                          style="object-fit: cover;" 
                          alt="Vehicle Image"

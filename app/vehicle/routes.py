@@ -4,7 +4,7 @@ from app import db
 from app.vehicle import bp
 from app.models import Vehicle
 from app.forms import VehicleForm
-from app.utils import save_uploaded_file, delete_file
+from app.utils import save_uploaded_image, delete_uploaded_image
 
 @bp.route('/register', methods=['GET', 'POST'])
 @login_required
@@ -30,10 +30,11 @@ def register():
             current_odometer=form.current_odometer.data
         )
         
+        # Upload image if provided
         if form.image.data:
-            image_path = save_uploaded_file(form.image.data, 'vehicles')
-            if image_path:
-                vehicle.image_path = image_path
+            image_filename = save_uploaded_image(form.image.data)
+            if image_filename:
+                vehicle.image_path = image_filename
         
         db.session.add(vehicle)
         db.session.commit()
@@ -126,17 +127,18 @@ def edit(vehicle_id):
         
         if form.image.data:
             current_app.logger.info(f"Processing image upload for vehicle {vehicle_id}")
-            # Delete old image
+            # Delete old image if exists
             if vehicle.image_path:
                 current_app.logger.info(f"Deleting old image: {vehicle.image_path}")
-                delete_file(vehicle.image_path)
-            # Save new image
-            image_path = save_uploaded_file(form.image.data, 'vehicles')
-            if image_path:
-                current_app.logger.info(f"Image saved successfully: {image_path}")
-                vehicle.image_path = image_path
+                delete_uploaded_image(vehicle.image_path)
+            
+            # Upload new image
+            image_filename = save_uploaded_image(form.image.data)
+            if image_filename:
+                current_app.logger.info(f"Image uploaded successfully: {image_filename}")
+                vehicle.image_path = image_filename
             else:
-                current_app.logger.warning(f"Image upload failed - likely invalid file type")
+                current_app.logger.warning("Image upload failed")
                 flash('Image upload failed. Please ensure the file is a valid image format.', 'warning')
         
         db.session.commit()

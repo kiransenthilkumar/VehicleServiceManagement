@@ -10,10 +10,13 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {}
     
-    # Upload folder - use absolute path for Render compatibility
-    UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
+    # Upload folders - use absolute path for Render compatibility
+    UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
+    VEHICLE_UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads', 'vehicles')
+    DOCUMENT_UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads', 'documents')
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'bmp', 'svg', 'tiff', 'ico', 'pdf'}
+    ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'}
     
     # Session configuration
     PERMANENT_SESSION_LIFETIME = timedelta(hours=24)

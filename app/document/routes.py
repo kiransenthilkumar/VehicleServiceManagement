@@ -4,7 +4,7 @@ from app import db
 from app.document import bp
 from app.models import Vehicle, Document
 from app.forms import DocumentForm
-from app.utils import save_uploaded_file, delete_file
+from app.utils import delete_uploaded_image
 from datetime import datetime
 import os
 
@@ -19,21 +19,36 @@ def upload(vehicle_id):
     form = DocumentForm()
     if form.validate_on_submit():
         if form.file.data:
-            file_path = save_uploaded_file(form.file.data, 'documents')
-            if file_path:
-                document = Document(
-                    vehicle_id=vehicle_id,
-                    document_type=form.document_type.data,
-                    file_path=file_path,
-                    expiry_date=form.expiry_date.data,
-                    description=form.description.data
-                )
-                db.session.add(document)
-                db.session.commit()
-                flash('Document uploaded successfully!', 'success')
-                return redirect(url_for('vehicle.view', vehicle_id=vehicle_id))
-            else:
-                flash('Invalid file type. Please upload a valid document.', 'error')
+            # Get absolute path to static/uploads folder
+            basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+            uploads_dir = os.path.join(basedir, 'static', 'uploads')
+            
+            # Create directory if it doesn't exist
+            if not os.path.exists(uploads_dir):
+                os.makedirs(uploads_dir, exist_ok=True)
+            
+            # Save document
+            from werkzeug.utils import secure_filename
+            filename = secure_filename(form.file.data.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            name, ext = os.path.splitext(filename)
+            unique_filename = f"{name}_{timestamp}{ext}"
+            
+            file_path = os.path.join(uploads_dir, unique_filename)
+            form.file.data.seek(0)
+            form.file.data.save(file_path)
+            
+            document = Document(
+                vehicle_id=vehicle_id,
+                document_type=form.document_type.data,
+                file_path=unique_filename,  # Store filename only
+                expiry_date=form.expiry_date.data,
+                description=form.description.data
+            )
+            db.session.add(document)
+            db.session.commit()
+            flash('Document uploaded successfully!', 'success')
+            return redirect(url_for('vehicle.view', vehicle_id=vehicle_id))
     
     return render_template('document/upload.html', form=form, vehicle=vehicle)
 
@@ -48,7 +63,9 @@ def download(document_id):
         flash('Access denied.', 'error')
         return redirect(url_for('main.dashboard'))
     
-    file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], document.file_path)
+    basedir = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    file_path = os.path.join(basedir, 'static', 'uploads', document.file_path)
+    
     if os.path.exists(file_path):
         directory = os.path.dirname(file_path)
         filename = os.path.basename(file_path)
@@ -68,13 +85,15 @@ def delete_document(document_id):
         flash('Access denied.', 'error')
         return redirect(url_for('main.dashboard'))
     
-    # Delete file from filesystem
-    if document.file_path:
+    # Delete file from filesystem (only for local legacy files)
+    if document.file_path and not document.file_path.startswith('http'):
         delete_file(document.file_path)
+    # Note: Cloudinary files are deleted by Cloudinary's retention policy or manual cleanup
     
     vehicle_id = vehicle.id
     db.session.delete(document)
     db.session.commit()
+    current_app.logger.info(f"Document deleted: {document.file_path}")
     flash('Document deleted successfully!', 'success')
     return redirect(url_for('vehicle.view', vehicle_id=vehicle_id))
 

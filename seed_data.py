@@ -49,6 +49,8 @@ def seed_database():
         print('Creating vehicles and service data...')
         vehicles = []
         reg_counter = 1
+        car_counter = 1
+        
         for u in users:
             user_obj = u['obj']
             city_code = {
@@ -62,14 +64,42 @@ def seed_database():
             for vnum in range(2):
                 reg = f"{city_code}-AA-{reg_counter:04d}"
                 reg_counter += 1
-                brands = ['Maruti Suzuki', 'Hyundai', 'Honda', 'Toyota', 'Tata']
-                models = ['Swift', 'i20', 'City', 'Innova', 'Nexon']
-                brand = random.choice(brands)
-                model = random.choice(models)
+                
+                # Realistic car data
+                car_data = [
+                    {'brand': 'Maruti Suzuki', 'model': 'Swift', 'fuel': 'Petrol'},
+                    {'brand': 'Hyundai', 'model': 'i20', 'fuel': 'Diesel'},
+                    {'brand': 'Honda', 'model': 'City', 'fuel': 'Petrol'},
+                    {'brand': 'Toyota', 'model': 'Innova', 'fuel': 'Diesel'},
+                    {'brand': 'Tata', 'model': 'Nexon', 'fuel': 'Petrol'},
+                    {'brand': 'Maruti Suzuki', 'model': 'Ciaz', 'fuel': 'Diesel'},
+                    {'brand': 'Hyundai', 'model': 'Creta', 'fuel': 'Petrol'},
+                    {'brand': 'Honda', 'model': 'Accord', 'fuel': 'Petrol'},
+                ]
+                
+                car = random.choice(car_data)
+                brand = car['brand']
+                model = car['model']
+                fuel = car['fuel']
                 manufacture = random.randint(2016, 2023)
                 odo = random.randint(5000, 60000)
+                
+                # Generate image filename (user will add images with these names)
+                brand_lower = brand.lower().replace(' ', '_')
+                model_lower = model.lower().replace(' ', '_')
+                image_filename = f"{brand_lower}_{model_lower}_{car_counter:02d}.jpg"
+                car_counter += 1
 
-                vehicle = Vehicle(user_id=user_obj.id, registration_number=reg, brand=brand, model=model, fuel_type=random.choice(['Petrol', 'Diesel', 'CNG']), manufacturing_year=manufacture, current_odometer=odo)
+                vehicle = Vehicle(
+                    user_id=user_obj.id, 
+                    registration_number=reg, 
+                    brand=brand, 
+                    model=model, 
+                    fuel_type=fuel, 
+                    manufacturing_year=manufacture, 
+                    current_odometer=odo,
+                    image_path=image_filename  # Store filename
+                )
                 db.session.add(vehicle)
                 db.session.flush()
                 vehicles.append(vehicle)
@@ -104,13 +134,46 @@ def seed_database():
 
         db.session.commit()
 
-        print('\n' + '='*50)
-        print('Seeding complete:')
-        print(f'  Admin: admin / admin123')
+        print('\n' + '='*60)
+        print('✅ SEEDING COMPLETE')
+        print('='*60)
+        print('\nAdmin Account:')
+        print('  Username: admin')
+        print('  Password: admin123')
+        print('\nCustomer Accounts (8 users):')
         for u in users:
-            print(f"  User: {u['obj'].username} — password: password123 — city: {u['city']}")
-        print('  Each user has 2 vehicles (with TN registration) and each vehicle has 2 service records + invoice + reminder')
-        print('='*50 + '\n')
+            print(f"  • {u['obj'].username.ljust(12)} | Password: password123 | City: {u['city']}")
+        
+        print('\n' + '-'*60)
+        print('VEHICLE DATA:')
+        print('  • 8 users × 2 vehicles = 16 vehicles')
+        print('  • Each vehicle has:')
+        print('    - 2 service records')
+        print('    - 2 invoices (marked as paid)')
+        print('    - 1 service reminder')
+        print('  • Car Images Required (add to static/uploads/):')
+        print('-'*60)
+        
+        # List all required images
+        image_files = set()
+        for vehicle in vehicles:
+            if vehicle.image_path:
+                image_files.add(vehicle.image_path)
+        
+        total_images = len(image_files)
+        print(f'\n📁 Total images needed: {total_images}')
+        print('\nCreate/download images with these filenames and place in:')
+        print('   📂 static/uploads/\n')
+        
+        for img in sorted(image_files):
+            print(f'   • {img}')
+        
+        print('\n' + '='*60)
+        print('ℹ️  QUICK SETUP:')
+        print('  1. python run.py')
+        print('  2. Add images to: static/uploads/')
+        print('  3. Refresh browser - all images will display')
+        print('='*60 + '\n')
 
 
 if __name__ == '__main__':
